@@ -1,6 +1,5 @@
 flask
 yfinance
-matplotlib
 pandas
 numpy
 plotly

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Analisis Harga Emas</title>
+    <title>OTW TUKU PAJEROOO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <link
@@ -92,20 +92,16 @@
         color: #1a1a1a !important;
       }
 
-      /* Scrollbar styling */
       ::-webkit-scrollbar {
         width: 8px;
       }
-
       ::-webkit-scrollbar-track {
         background: #1a1a1a;
       }
-
       ::-webkit-scrollbar-thumb {
         background: #d4af37;
         border-radius: 4px;
       }
-
       ::-webkit-scrollbar-thumb:hover {
         background: #ffd700;
       }
@@ -118,10 +114,9 @@
         <div class="inline-block p-3 mb-4 rounded-full bg-dark-300">
           <i class="fas fa-chart-line text-3xl gold-gradient"></i>
         </div>
-        <h1 class="text-4xl font-bold gold-gradient mb-2">
-          OTW TUKU FERARI BOLO
-        </h1>
-        <p class="text-gray-400">HIHIHIHI IHIK IHIK CRIT</p>
+        <h1 class="text-4xl font-bold gold-gradient mb-2">OTW TUKU FERARRI</h1>
+        <p class="text-gray-400">Data harga emas 6 bulan terakhir</p>
+        <p class="text-gray-500 text-sm">Update terakhir: {{ update_time }}</p>
       </header>
 
       <!-- Harga terkini -->
@@ -184,7 +179,7 @@
             <i class="fas fa-chart-line text-gold-500"></i>
           </div>
           <h2 class="text-xl font-semibold text-gold-300">
-            Grafik Harga Emas 2 Tahun Terakhir (IDR/gram)
+            Grafik Harga Emas 6 Bulan Terakhir (IDR/gram)
           </h2>
         </div>
         <div id="goldChart" class="w-full h-96"></div>
@@ -205,14 +200,12 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="bg-dark-400 p-4 rounded-lg">
-            <div class="flex items-center mb-2">
+            <h3 class="font-medium text-gold-200 mb-2">
               <i class="fas fa-arrow-up text-green-400 mr-2"></i>
-              <h3 class="font-medium text-gold-200">
-                Kenaikan Nominal Tertinggi
-              </h3>
-            </div>
+              Kenaikan Nominal Tertinggi
+            </h3>
             <p class="text-white">
-              {{ max_increase.Date }}
+              {{ max_increase.Date }} :
               <span class="text-green-400 font-medium"
                 >+{{ max_increase.Change | rupiah }}</span
               >
@@ -220,14 +213,12 @@
           </div>
 
           <div class="bg-dark-400 p-4 rounded-lg">
-            <div class="flex items-center mb-2">
+            <h3 class="font-medium text-gold-200 mb-2">
               <i class="fas fa-arrow-down text-red-400 mr-2"></i>
-              <h3 class="font-medium text-gold-200">
-                Penurunan Nominal Terbesar
-              </h3>
-            </div>
+              Penurunan Nominal Terbesar
+            </h3>
             <p class="text-white">
-              {{ max_decrease.Date }}
+              {{ max_decrease.Date }} :
               <span class="text-red-400 font-medium"
                 >{{ max_decrease.Change | rupiah }}</span
               >
@@ -235,14 +226,12 @@
           </div>
 
           <div class="bg-dark-400 p-4 rounded-lg">
-            <div class="flex items-center mb-2">
+            <h3 class="font-medium text-gold-200 mb-2">
               <i class="fas fa-percentage text-green-400 mr-2"></i>
-              <h3 class="font-medium text-gold-200">
-                Kenaikan Persentase Tertinggi
-              </h3>
-            </div>
+              Kenaikan Persentase Tertinggi
+            </h3>
             <p class="text-white">
-              {{ max_percent_increase.Date }}
+              {{ max_percent_increase.Date }} :
               <span class="text-green-400 font-medium"
                 >+{{ max_percent_increase.Percent_Change | round(2) }}%</span
               >
@@ -250,14 +239,12 @@
           </div>
 
           <div class="bg-dark-400 p-4 rounded-lg">
-            <div class="flex items-center mb-2">
+            <h3 class="font-medium text-gold-200 mb-2">
               <i class="fas fa-percent text-red-400 mr-2"></i>
-              <h3 class="font-medium text-gold-200">
-                Penurunan Persentase Terbesar
-              </h3>
-            </div>
+              Penurunan Persentase Terbesar
+            </h3>
             <p class="text-white">
-              {{ max_percent_decrease.Date }}
+              {{ max_percent_decrease.Date }} :
               <span class="text-red-400 font-medium"
                 >{{ max_percent_decrease.Percent_Change | round(2) }}%</span
               >
@@ -309,20 +296,25 @@
                     class="px-2 py-1 bg-green-900/30 text-green-400 rounded-full text-xs font-medium"
                     ><i class="fas fa-arrow-up mr-1"></i> Naik</span
                   >
-                  {% else %}
+                  {% elif row.Status == 'Turun' %}
                   <span
                     class="px-2 py-1 bg-red-900/30 text-red-400 rounded-full text-xs font-medium"
                     ><i class="fas fa-arrow-down mr-1"></i> Turun</span
                   >
+                  {% else %}
+                  <span
+                    class="px-2 py-1 bg-gray-700 text-gray-300 rounded-full text-xs font-medium"
+                    >Tetap</span
+                  >
                   {% endif %}
                 </td>
                 <td
-                  class="px-4 py-3 {% if row.Change > 0 %}text-green-400{% else %}text-red-400{% endif %}"
+                  class="px-4 py-3 {% if row.Change > 0 %}text-green-400{% elif row.Change < 0 %}text-red-400{% else %}text-gray-400{% endif %}"
                 >
                   {% if row.Change > 0 %}+{% endif %}{{ row.Change | rupiah }}
                 </td>
                 <td
-                  class="px-4 py-3 {% if row.Percent_Change > 0 %}text-green-400{% else %}text-red-400{% endif %}"
+                  class="px-4 py-3 {% if row.Percent_Change > 0 %}text-green-400{% elif row.Percent_Change < 0 %}text-red-400{% else %}text-gray-400{% endif %}"
                 >
                   {% if row.Percent_Change > 0 %}+{% endif %}{{
                   row.Percent_Change | round(2) }}%
@@ -338,7 +330,7 @@
           {% if current_page > 1 %}
           <a
             href="/?page={{ current_page - 1 }}"
-            class="px-4 py-2 bg-dark-400 text-gold-300 rounded-lg pagination-btn hover:bg-gold-600 hover:text-dark-300 transition-colors"
+            class="px-4 py-2 bg-dark-400 text-gold-300 rounded-lg pagination-btn"
           >
             <i class="fas fa-chevron-left mr-1"></i> Sebelumnya
           </a>
@@ -351,7 +343,7 @@
           {% if current_page < total_pages %}
           <a
             href="/?page={{ current_page + 1 }}"
-            class="px-4 py-2 bg-dark-400 text-gold-300 rounded-lg pagination-btn hover:bg-gold-600 hover:text-dark-300 transition-colors"
+            class="px-4 py-2 bg-dark-400 text-gold-300 rounded-lg pagination-btn"
           >
             Berikutnya <i class="fas fa-chevron-right ml-1"></i>
           </a>
@@ -360,8 +352,8 @@
       </div>
 
       <!-- Footer -->
-      <footer class="text-center text-gray-500 text-sm pt-8 pb-4">
-        <p>OTW TUKU FERRARI SAK PABRIK E</p>
+      <footer class="text-center text-gray-500 text-xl font-bold pt-8 pb-4">
+        <h1 class="text-4xl font-bold gold-gradient mb-2">OTW TUKU FERARRI</h1>
       </footer>
     </div>
 
@@ -369,12 +361,7 @@
       var chartLabels = {{ chart_labels|tojson }};
       var chartValues = {{ chart_values|tojson }};
 
-      // Set tema gelap untuk grafik
       var layout = {
-        title: {
-          text: 'Harga Emas dalam Rupiah/gram',
-          font: { color: '#d4af37', family: 'Playfair Display' }
-        },
         plot_bgcolor: 'rgba(0, 0, 0, 0)',
         paper_bgcolor: 'rgba(0, 0, 0, 0)',
         xaxis: {
@@ -394,15 +381,10 @@
         x: chartLabels,
         y: chartValues,
         mode: 'lines',
-        name: 'Harga Emas',
-        line: {
-          color: '#ffd700',
-          width: 3,
-          shape: 'spline'
-        }
+        line: { color: '#ffd700', width: 3, shape: 'spline' }
       };
 
-      Plotly.newPlot('goldChart', [trace], layout, {displayModeBar: true});
+      Plotly.newPlot('goldChart', [trace], layout, { displayModeBar: true });
     </script>
   </body>
 </html>
