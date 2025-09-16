@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Analisis Harga Emas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              dark: {
+                100: "#1a1a1a",
+                200: "#1f1f1f",
+                300: "#252525",
+                400: "#2a2a2a",
+                500: "#2f2f2f",
+              },
+              gold: {
+                100: "#fff9c4",
+                200: "#ffef9a",
+                300: "#ffea80",
+                400: "#ffdf57",
+                500: "#ffd700",
+                600: "#d4af37",
+                700: "#b8860b",
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap");
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 100%);
+        color: #e0e0e0;
+        min-height: 100vh;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        font-family: "Playfair Display", serif;
+      }
+
+      .gold-gradient {
+        background: linear-gradient(
+          135deg,
+          #d4af37 0%,
+          #ffd700 50%,
+          #f0c465 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .card-hover {
+        transition: all 0.3s ease;
+        border: 1px solid rgba(212, 175, 55, 0.1);
+      }
+
+      .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(212, 175, 55, 0.2);
+        border: 1px solid rgba(212, 175, 55, 0.3);
+      }
+
+      .table-row-hover:hover {
+        background: rgba(212, 175, 55, 0.05) !important;
+      }
+
+      .pagination-btn {
+        transition: all 0.2s ease;
+      }
+
+      .pagination-btn:hover {
+        background-color: #d4af37 !important;
+        color: #1a1a1a !important;
+      }
+
+      /* Scrollbar styling */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: #1a1a1a;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: #d4af37;
+        border-radius: 4px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: #ffd700;
+      }
+    </style>
+  </head>
+  <body class="dark:bg-gray-900">
+    <div class="container mx-auto py-8 px-4">
+      <!-- Header -->
+      <header class="text-center mb-10">
+        <div class="inline-block p-3 mb-4 rounded-full bg-dark-300">
+          <i class="fas fa-chart-line text-3xl gold-gradient"></i>
+        </div>
+        <h1 class="text-4xl font-bold gold-gradient mb-2">
+          OTW TUKU FERARI BOLO
+        </h1>
+        <p class="text-gray-400">HIHIHIHI IHIK IHIK CRIT</p>
+      </header>
+
+      <!-- Harga terkini -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div
+          class="bg-dark-300 p-6 rounded-xl shadow-lg card-hover border border-gold-700/10"
+        >
+          <div class="flex items-center mb-3">
+            <div class="bg-dark-400 p-2 rounded-lg mr-3">
+              <i class="fas fa-weight text-gold-500"></i>
+            </div>
+            <h2 class="text-lg font-semibold text-gold-300">
+              Harga per Ounce (USD)
+            </h2>
+          </div>
+          <p class="text-2xl font-bold text-gold-100">
+            {{ latest_usd_oz | round(2) }} USD
+          </p>
+        </div>
+
+        <div
+          class="bg-dark-300 p-6 rounded-xl shadow-lg card-hover border border-gold-700/10"
+        >
+          <div class="flex items-center mb-3">
+            <div class="bg-dark-400 p-2 rounded-lg mr-3">
+              <i class="fas fa-weight-scale text-gold-500"></i>
+            </div>
+            <h2 class="text-lg font-semibold text-gold-300">
+              Harga per Gram (USD)
+            </h2>
+          </div>
+          <p class="text-2xl font-bold text-gold-100">
+            {{ latest_usd_g | round(2) }} USD
+          </p>
+        </div>
+
+        <div
+          class="bg-dark-300 p-6 rounded-xl shadow-lg card-hover border border-gold-700/10"
+        >
+          <div class="flex items-center mb-3">
+            <div class="bg-dark-400 p-2 rounded-lg mr-3">
+              <i class="fas fa-coins text-gold-500"></i>
+            </div>
+            <h2 class="text-lg font-semibold text-gold-300">
+              Harga per Gram (IDR)
+            </h2>
+          </div>
+          <p class="text-2xl font-bold text-gold-100">
+            {{ latest_idr_g | rupiah }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Grafik -->
+      <div
+        class="bg-dark-300 p-6 rounded-xl shadow-lg mb-10 border border-gold-700/10"
+      >
+        <div class="flex items-center mb-4">
+          <div class="bg-dark-400 p-2 rounded-lg mr-3">
+            <i class="fas fa-chart-line text-gold-500"></i>
+          </div>
+          <h2 class="text-xl font-semibold text-gold-300">
+            Grafik Harga Emas 2 Tahun Terakhir (IDR/gram)
+          </h2>
+        </div>
+        <div id="goldChart" class="w-full h-96"></div>
+      </div>
+
+      <!-- Analisis -->
+      <div
+        class="bg-dark-300 p-6 rounded-xl shadow-lg mb-10 border border-gold-700/10"
+      >
+        <div class="flex items-center mb-4">
+          <div class="bg-dark-400 p-2 rounded-lg mr-3">
+            <i class="fas fa-analytics text-gold-500"></i>
+          </div>
+          <h2 class="text-xl font-semibold text-gold-300">
+            Analisis 2 Bulan Terakhir
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-dark-400 p-4 rounded-lg">
+            <div class="flex items-center mb-2">
+              <i class="fas fa-arrow-up text-green-400 mr-2"></i>
+              <h3 class="font-medium text-gold-200">
+                Kenaikan Nominal Tertinggi
+              </h3>
+            </div>
+            <p class="text-white">
+              {{ max_increase.Date }}
+              <span class="text-green-400 font-medium"
+                >+{{ max_increase.Change | rupiah }}</span
+              >
+            </p>
+          </div>
+
+          <div class="bg-dark-400 p-4 rounded-lg">
+            <div class="flex items-center mb-2">
+              <i class="fas fa-arrow-down text-red-400 mr-2"></i>
+              <h3 class="font-medium text-gold-200">
+                Penurunan Nominal Terbesar
+              </h3>
+            </div>
+            <p class="text-white">
+              {{ max_decrease.Date }}
+              <span class="text-red-400 font-medium"
+                >{{ max_decrease.Change | rupiah }}</span
+              >
+            </p>
+          </div>
+
+          <div class="bg-dark-400 p-4 rounded-lg">
+            <div class="flex items-center mb-2">
+              <i class="fas fa-percentage text-green-400 mr-2"></i>
+              <h3 class="font-medium text-gold-200">
+                Kenaikan Persentase Tertinggi
+              </h3>
+            </div>
+            <p class="text-white">
+              {{ max_percent_increase.Date }}
+              <span class="text-green-400 font-medium"
+                >+{{ max_percent_increase.Percent_Change | round(2) }}%</span
+              >
+            </p>
+          </div>
+
+          <div class="bg-dark-400 p-4 rounded-lg">
+            <div class="flex items-center mb-2">
+              <i class="fas fa-percent text-red-400 mr-2"></i>
+              <h3 class="font-medium text-gold-200">
+                Penurunan Persentase Terbesar
+              </h3>
+            </div>
+            <p class="text-white">
+              {{ max_percent_decrease.Date }}
+              <span class="text-red-400 font-medium"
+                >{{ max_percent_decrease.Percent_Change | round(2) }}%</span
+              >
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabel -->
+      <div
+        class="bg-dark-300 p-6 rounded-xl shadow-lg mb-10 border border-gold-700/10"
+      >
+        <div class="flex items-center mb-4">
+          <div class="bg-dark-400 p-2 rounded-lg mr-3">
+            <i class="fas fa-table text-gold-500"></i>
+          </div>
+          <h2 class="text-xl font-semibold text-gold-300">
+            Pergerakan Harga Emas (2 Bulan Terakhir)
+          </h2>
+        </div>
+
+        <div class="overflow-x-auto rounded-lg">
+          <table class="min-w-full border-collapse">
+            <thead>
+              <tr class="bg-dark-400 text-gold-300">
+                <th class="px-4 py-3 text-left font-medium rounded-tl-lg">
+                  Tanggal
+                </th>
+                <th class="px-4 py-3 text-left font-medium">
+                  Harga (IDR/gram)
+                </th>
+                <th class="px-4 py-3 text-left font-medium">Status</th>
+                <th class="px-4 py-3 text-left font-medium">Perubahan</th>
+                <th class="px-4 py-3 text-left font-medium rounded-tr-lg">
+                  Perubahan (%)
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-700">
+              {% for row in last_two_months %}
+              <tr class="table-row-hover">
+                <td class="px-4 py-3">{{ row.Date }}</td>
+                <td class="px-4 py-3 font-medium text-gold-200">
+                  {{ row.Gold_IDR_gram | rupiah }}
+                </td>
+                <td class="px-4 py-3">
+                  {% if row.Status == 'Naik' %}
+                  <span
+                    class="px-2 py-1 bg-green-900/30 text-green-400 rounded-full text-xs font-medium"
+                    ><i class="fas fa-arrow-up mr-1"></i> Naik</span
+                  >
+                  {% else %}
+                  <span
+                    class="px-2 py-1 bg-red-900/30 text-red-400 rounded-full text-xs font-medium"
+                    ><i class="fas fa-arrow-down mr-1"></i> Turun</span
+                  >
+                  {% endif %}
+                </td>
+                <td
+                  class="px-4 py-3 {% if row.Change > 0 %}text-green-400{% else %}text-red-400{% endif %}"
+                >
+                  {% if row.Change > 0 %}+{% endif %}{{ row.Change | rupiah }}
+                </td>
+                <td
+                  class="px-4 py-3 {% if row.Percent_Change > 0 %}text-green-400{% else %}text-red-400{% endif %}"
+                >
+                  {% if row.Percent_Change > 0 %}+{% endif %}{{
+                  row.Percent_Change | round(2) }}%
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="flex justify-center mt-6 space-x-2">
+          {% if current_page > 1 %}
+          <a
+            href="/?page={{ current_page - 1 }}"
+            class="px-4 py-2 bg-dark-400 text-gold-300 rounded-lg pagination-btn hover:bg-gold-600 hover:text-dark-300 transition-colors"
+          >
+            <i class="fas fa-chevron-left mr-1"></i> Sebelumnya
+          </a>
+          {% endif %}
+
+          <span class="px-4 py-2 bg-dark-400 text-gold-300 rounded-lg">
+            Halaman {{ current_page }} dari {{ total_pages }}
+          </span>
+
+          {% if current_page < total_pages %}
+          <a
+            href="/?page={{ current_page + 1 }}"
+            class="px-4 py-2 bg-dark-400 text-gold-300 rounded-lg pagination-btn hover:bg-gold-600 hover:text-dark-300 transition-colors"
+          >
+            Berikutnya <i class="fas fa-chevron-right ml-1"></i>
+          </a>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <footer class="text-center text-gray-500 text-sm pt-8 pb-4">
+        <p>OTW TUKU FERRARI SAK PABRIK E</p>
+      </footer>
+    </div>
+
+    <script>
+      var chartLabels = {{ chart_labels|tojson }};
+      var chartValues = {{ chart_values|tojson }};
+
+      // Set tema gelap untuk grafik
+      var layout = {
+        title: {
+          text: 'Harga Emas dalam Rupiah/gram',
+          font: { color: '#d4af37', family: 'Playfair Display' }
+        },
+        plot_bgcolor: 'rgba(0, 0, 0, 0)',
+        paper_bgcolor: 'rgba(0, 0, 0, 0)',
+        xaxis: {
+          title: { text: 'Tanggal', font: { color: '#e0e0e0' } },
+          gridcolor: '#2f2f2f',
+          tickfont: { color: '#e0e0e0' }
+        },
+        yaxis: {
+          title: { text: 'Harga (Rp)', font: { color: '#e0e0e0' } },
+          gridcolor: '#2f2f2f',
+          tickfont: { color: '#e0e0e0' }
+        },
+        font: { family: 'Poppins' }
+      };
+
+      var trace = {
+        x: chartLabels,
+        y: chartValues,
+        mode: 'lines',
+        name: 'Harga Emas',
+        line: {
+          color: '#ffd700',
+          width: 3,
+          shape: 'spline'
+        }
+      };
+
+      Plotly.newPlot('goldChart', [trace], layout, {displayModeBar: true});
+    </script>
+  </body>
+</html>
