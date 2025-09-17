@@ -114,7 +114,9 @@
         <div class="inline-block p-3 mb-4 rounded-full bg-dark-300">
           <i class="fas fa-chart-line text-3xl gold-gradient"></i>
         </div>
-        <h1 class="text-4xl font-bold gold-gradient mb-2">OTW TUKU FERARRI</h1>
+        <h1 class="text-4xl font-bold gold-gradient mb-2">
+          GOLD, GLORY, GOSPEL
+        </h1>
         <p class="text-gray-400">Data harga emas 6 bulan terakhir</p>
         <p class="text-gray-500 text-sm">Update terakhir: {{ update_time }}</p>
       </header>
@@ -360,33 +362,40 @@
     </div>
 
     <script>
-      var chartLabels = {{ chart_labels|tojson }};
-      var chartValues = {{ chart_values|tojson }};
+      async function loadChart() {
+        const res = await fetch("/data");
+        const data = await res.json();
 
-      var layout = {
-        plot_bgcolor: 'rgba(0, 0, 0, 0)',
-        paper_bgcolor: 'rgba(0, 0, 0, 0)',
-        xaxis: {
-          title: { text: 'Tanggal', font: { color: '#e0e0e0' } },
-          gridcolor: '#2f2f2f',
-          tickfont: { color: '#e0e0e0' }
-        },
-        yaxis: {
-          title: { text: 'Harga (Rp)', font: { color: '#e0e0e0' } },
-          gridcolor: '#2f2f2f',
-          tickfont: { color: '#e0e0e0' }
-        },
-        font: { family: 'Poppins' }
-      };
+        var layout = {
+          plot_bgcolor: "rgba(0,0,0,0)",
+          paper_bgcolor: "rgba(0,0,0,0)",
+          xaxis: {
+            title: { text: "Tanggal", font: { color: "#e0e0e0" } },
+            gridcolor: "#2f2f2f",
+            tickfont: { color: "#e0e0e0" },
+          },
+          yaxis: {
+            title: { text: "Harga (Rp)", font: { color: "#e0e0e0" } },
+            gridcolor: "#2f2f2f",
+            tickfont: { color: "#e0e0e0" },
+          },
+          font: { family: "Poppins" },
+        };
 
-      var trace = {
-        x: chartLabels,
-        y: chartValues,
-        mode: 'lines',
-        line: { color: '#ffd700', width: 3, shape: 'spline' }
-      };
+        var trace = {
+          x: data.dates,
+          y: data.values,
+          mode: "lines",
+          line: { color: "#ffd700", width: 3, shape: "spline" },
+        };
 
-      Plotly.newPlot('goldChart', [trace], layout, { displayModeBar: true });
+        Plotly.newPlot("goldChart", [trace], layout, { displayModeBar: true });
+      }
+
+      // Load pertama kali
+      loadChart();
+      // Update tiap 5 menit
+      setInterval(loadChart, 300000);
     </script>
   </body>
 </html>
