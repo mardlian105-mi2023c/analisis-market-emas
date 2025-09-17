@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, jsonify
 import yfinance as yf
 import pandas as pd
 from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo  # ✅ untuk timezone Indonesia
 
 app = Flask(__name__)
 
@@ -80,7 +81,9 @@ def index():
         latest_usd_oz=latest_usd_oz,
         latest_usd_g=latest_usd_g,
         latest_idr_g=latest_idr_g,
-        update_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        update_time=datetime.now(ZoneInfo("Asia/Jakarta")).strftime(
+            "%Y-%m-%d %H:%M:%S"
+        ),  # ✅ WIB
         chart_labels=df["Date"].tolist(),
         chart_values=df["Gold_IDR_gram"].round(2).tolist(),
         max_increase=max_increase,
